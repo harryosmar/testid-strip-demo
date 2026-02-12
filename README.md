@@ -2,6 +2,8 @@
 
 A utility that automatically removes test-id attributes in production builds while preserving them in development for testing purposes, using a simple helper function.
 
+<img width="1127" height="720" alt="image" src="https://github.com/user-attachments/assets/94f52af6-64e9-4bbf-985a-d89a06d23267" />
+
 ## Overview
 
 This project demonstrates how to:
