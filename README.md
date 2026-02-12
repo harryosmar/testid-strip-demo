@@ -2,6 +2,9 @@
 
 A demonstration of using `babel-plugin-jsx-remove-data-test-id` to automatically remove data-testid attributes from React components in production builds while preserving them for development and testing.
 
+<img width="1127" height="637" alt="image" src="https://github.com/user-attachments/assets/80faddb2-5670-4f01-8e83-1fd9bc79ff50" />
+
+
 ## Overview
 
 This project demonstrates how to:
