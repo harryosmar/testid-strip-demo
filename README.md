@@ -1,6 +1,6 @@
-# test-id-remover Demo
+# test-id-remover
 
-A demonstration of using `babel-plugin-jsx-remove-data-test-id` to automatically remove data-testid attributes from React components in production builds while preserving them for development and testing.
+A utility that automatically removes test-id attributes in production builds while preserving them in development for testing purposes, using a simple helper function.
 
 ## Overview
 
@@ -35,56 +35,121 @@ For detailed step-by-step instructions on creating this project from scratch, se
 To see the demonstration in action, run:
 
 ```bash
-npm run compare
+# Build the development version (with test IDs)
+npm run build:dev
+
+# Build the production version (without test IDs)
+npm run build:prod
 ```
 
-This command will:
-1. Build the React component with test IDs preserved (development build)
-2. Build the React component with test IDs removed (production build)
-3. Compare both outputs to show the differences
-
-### Expected Output
-
-The script will display:
-- The number of data-testid attributes in each build
-- A snippet of code from both builds for comparison
-- A success message confirming that test IDs were removed in production
+Examine the compiled output in the `dist/dev` and `dist/prod` directories to see the difference.
 
 ## How It Works
 
-The magic happens in the `.babelrc` configuration:
+The magic happens in the `testIdHelper` function:
 
-```json
-{
-  "presets": ["@babel/preset-env", "@babel/preset-react"],
-  "env": {
-    "development": {
-      "plugins": []
-    },
-    "production": {
-      "plugins": ["babel-plugin-jsx-remove-data-test-id"]
-    }
+```javascript
+export const testIdHelper = (paramId) => {
+  if (process.env.NODE_ENV === 'production') {
+    // In production: return empty string
+    return '';
   }
-}
+  
+  // In development/test: return the parameter directly
+  return paramId;
+};
 ```
 
-This configuration:
-1. Applies the test-id removal plugin only in production mode
-2. Preserves test IDs in development mode
+This simple helper function:
+1. Checks the current environment via `process.env.NODE_ENV`
+2. In production: Returns an empty string, effectively removing the test ID
+3. In development: Returns the original parameter, preserving the test ID for testing
+
+The `babel.config.js` file ensures that `process.env.NODE_ENV` is correctly replaced during the build process:
+
+```javascript
+module.exports = function(api) {
+  api.cache(true);
+  
+  return {
+    presets: [
+      ["@babel/preset-env", { targets: { node: "current" } }],
+      "@babel/preset-react"
+    ],
+    plugins: [
+      ["transform-define", {
+        "process.env.NODE_ENV": process.env.NODE_ENV || "development"
+      }]
+    ]
+  };
+};
+```
 
 ## Implementation in Your Project
 
 To implement this in your own project:
 
-1. Install the plugin:
-   ```bash
-   npm install --save-dev babel-plugin-jsx-remove-data-test-id
+1. Create the testIdHelper utility function:
+
+   ```javascript
+   // src/utils/testid-helper.js
+   export const testIdHelper = (paramId) => {
+     if (process.env.NODE_ENV === 'production') {
+       // In production: return empty string
+       return '';
+     }
+     
+     // In development/test: return the parameter directly
+     return paramId;
+   };
    ```
 
-2. Add it to your Babel configuration for production only
-3. Make sure your build process sets the appropriate `BABEL_ENV` variable
+2. Configure Babel to replace process.env.NODE_ENV at build time:
 
-This approach allows you to safely use test IDs in your code without compromising security or performance in production.
+   ```bash
+   npm install --save-dev babel-plugin-transform-define
+   ```
+
+   ```javascript
+   // babel.config.js
+   module.exports = function(api) {
+     api.cache(true);
+     
+     return {
+       presets: [/* your presets */],
+       plugins: [
+         ["transform-define", {
+           "process.env.NODE_ENV": process.env.NODE_ENV || "development"
+         }]
+       ]
+     };
+   };
+   ```
+
+3. Use the helper in your React components:
+
+   ```jsx
+   import { testIdHelper } from './utils/testid-helper';
+   
+   function MyComponent() {
+     return (
+       <div data-testid={testIdHelper("container")}>
+         <button data-testid={testIdHelper("submit-button")}>Submit</button>
+       </div>
+     );
+   }
+   ```
+
+4. Set up your build scripts in package.json:
+
+   ```json
+   "scripts": {
+     "build:dev": "NODE_ENV=development babel src --out-dir dist/dev",
+     "build:prod": "NODE_ENV=production babel src --out-dir dist/prod"
+   }
+   ```
+
+This approach allows you to keep test IDs in development/test environments for testing, while automatically removing them in production builds for security and better performance.
 
 ## License
 

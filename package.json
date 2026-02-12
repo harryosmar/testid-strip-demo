@@ -1,27 +1,29 @@
 {
   "name": "test-id-remover",
   "version": "1.0.0",
+  "description": "Simple utility to remove test IDs in production builds",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build:dev": "BABEL_ENV=development babel src --out-dir dist/dev --extensions '.jsx,.js'  --copy-files",
-    "build:prod": "BABEL_ENV=production babel src --out-dir dist/prod --extensions '.jsx,.js'  --copy-files",
-    "compare": "npm run build:dev && npm run build:prod && node scripts/compare.js"
+    "build:dev": "NODE_ENV=development babel src --out-dir dist/dev",
+    "build:prod": "NODE_ENV=production babel src --out-dir dist/prod",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
+  "keywords": [
+    "test-id",
+    "react",
+    "testing"
+  ],
   "author": "",
-  "license": "ISC",
-  "type": "commonjs",
-  "description": "",
+  "license": "MIT",
   "devDependencies": {
-    "@babel/cli": "^7.28.6",
-    "@babel/core": "^7.29.0",
-    "@babel/preset-env": "^7.29.0",
-    "@babel/preset-react": "^7.28.5",
-    "babel-plugin-jsx-remove-data-test-id": "^3.0.0"
+    "@babel/cli": "^7.23.4",
+    "@babel/core": "^7.23.5",
+    "@babel/preset-env": "^7.23.5",
+    "@babel/preset-react": "^7.23.3",
+    "babel-plugin-transform-define": "^2.1.0"
   },
   "dependencies": {
-    "react": "^19.2.4",
-    "react-dom": "^19.2.4"
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
   }
 }
